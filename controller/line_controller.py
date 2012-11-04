@@ -6,7 +6,7 @@ from consts import SCREEN_HEIGHT
 # todo make and use basecontroller
 class LineController(object):
 
-    def __init__(self, space, world):
+    def __init__(self, space):
         # todo world CAN NOT be used in this way. Do it properly
         # i.e. find a GOOD way to solve the whole space/world_objects problem...
         # best way is probably just to add world_objects to the custom Space,
@@ -14,7 +14,6 @@ class LineController(object):
         # to store everything in 2 different places.
         self.lines = []
         self.space = space
-        self.world = world
 
     def new_line(self, start_point=None, segments=None, radius=5):
         if start_point and isinstance(start_point, GfxCoord):
@@ -27,4 +26,4 @@ class LineController(object):
             new_point = new_point.to_phys(SCREEN_HEIGHT)
         segment = self.lines[-1].add_point(new_point)
         self.space.add(segment.shape)
-        self.world.append(segment)
+        self.space.world_objects.append(segment)

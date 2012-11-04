@@ -46,20 +46,12 @@ class Game(object):
         self.display.set_caption(title)
         self.space = Space(gravity)
         pygame.key.set_repeat(50,50)
-        self.world_objects = []
-        self.line_controller = LineController(self.space, self.world_objects)
+        self.line_controller = LineController(self.space)
 
-#        self.line_coord_arr = []
-        self.kosesag = False
-        self.last_coord = None # todo remove this shit.
-        self.lines = [] # todo remove this shit
         self.event_queue = Queue()
         self.bgcolor = THECOLORS["white"]
 
-        self.current_line = None
-
         self.is_drawing = False
-
         self.state = self.States.INITIALIZED
 
     def start(self):
@@ -82,7 +74,7 @@ class Game(object):
 
         ball = Ball(position, mass, radius=14)
         self.space.add(ball.body, ball.shape)
-        self.world_objects.append(ball) # todo handle in controller
+        self.space.world_objects.append(ball) # todo handle in controller
 
         return ball
 
@@ -124,70 +116,12 @@ class Game(object):
                 func(*args)
             else:
                 event()
-#            func, args, kwargs = event
-#            func(*args, **kwargs)
 
     def destroy(self, obj):
 #        print("Destroying %s..." % str(obj))
         self.space.remove(obj.shape, obj.body)
 #        print("World objects: %d" %len(self.world_objects))
-        self.world_objects.remove(obj)
-
-    def draw_line(self, pos=None):
-        """
-        :type pos: model.coord.GfxCoord
-        """
-
-        # todo Line() in body IS the line-controller! ofcourse!
-        # use it to FEED COORDINATES, do not expose the underlying segments
-        # i.e. just initialize by adding a start point.. then
-        # just keep feeding points and let the Line() body determine
-        # how and when to create the segments.
-
-        # todo put in controller
-        # and remake...
-        if pos and self.kosesag == False:
-            # Make new line
-            self.lines.append(Line(pos.to_phys(self.height)))
-            self.kosesag = True
-            self.current_line = self.lines[-1]
-            self.world_objects.append(self.lines[-1])
-        elif pos and self.kosesag:
-#            segment = LineSegment(self.lines[-1].last_coord, pos.to_phys(self.height), radius=5)
-#            self.lines[-1].add_segments(segment)
-#            if len(self.lines[-1].segments) > 5:
-#                print("1")
-#            self.last_coord = pos.to_phys(self.height)
-            segment = self.lines[-1].add_point(pos.to_phys(self.height))
-            self.space.add(segment.shape) # todo body? shape? or both?
-        elif pos is None and self.kosesag:
-            self.kosesag = False
-        else:
-            raise AssertionError("Something went wrong...")
-
-#        if not pos:
-#            if len(self.line_coord_arr) < 2:
-#                self.line_coord_arr = []
-#                return
-#            line = deepcopy(self.line_coord_arr)
-#            self.lines.append(line)
-#            self.line_coord_arr = []
-#
-#            line_body = pymunk.Body()
-#            cur_line = self.lines[-1]
-#            line_body.position = cur_line[0] # First pos in last element of lines
-#            segments = []
-#            for i in range(len(cur_line)):
-#                try:
-#                    segments.append(pymunk.Segment(line_body, cur_line[i], cur_line[i+1], 5))
-#                except IndexError:
-#                    pass
-#            print(segments)
-#            self.space.add(*segments)
-##            self.world_objects.extend(segments)
-#            return
-#
-#        self.line_coord_arr.append(self.make_coord(pos))
+        self.space.world_objects.remove(obj)
 
     def _cycle(self):
         self.exec_event_queue()
@@ -201,9 +135,8 @@ class Game(object):
                 elif event.key == pygame.K_a:
                     self.add_event(self.add_ball)
                 elif event.key == pygame.K_c:
-                    [self.space.remove(x, x.body) for x in self.world_objects]
-                    self.world_objects = []
-                    self.lines = []
+                    # TODO implement
+                    pass
 
 
             elif event.type == pygame.MOUSEBUTTONDOWN and not self.is_drawing:
@@ -223,7 +156,7 @@ class Game(object):
 #                self.add_event(self.draw_line)
 
 #        print(len(self.space.count_bodies()))
-        for obj in self.world_objects:
+        for obj in self.space.world_objects:
             obj.draw(self.screen, THECOLORS['black'], 5)
             if isinstance(obj, Body) and obj.body.position.y < -50:
                 self.destroy(obj)
