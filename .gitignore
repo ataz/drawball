@@ -1,4 +1,6 @@
 .idea*
+pymunk_test.py
+test.py
 
 #################
 ## Eclipse
