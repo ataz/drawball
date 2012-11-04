@@ -1,6 +1,6 @@
 __author__ = 'Atra'
-from model.body import Line, LineSegment
-from model.coord import GfxCoord, PhysCoord
+from model.body import Line
+from model.coord import GfxCoord
 from consts import SCREEN_HEIGHT
 #class LineController(BaseController):
 # todo make and use basecontroller

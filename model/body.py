@@ -1,7 +1,7 @@
 import pymunk
 import pygame
 import consts
-from model.coord import PhysCoord, get_midpoint
+from model.coord import PhysCoord
 
 class Entity(object):
     """

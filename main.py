@@ -1,18 +1,14 @@
 __author__ = 'Atra'
 import pygame
-import pymunk
 import sys
-from pymunk import Vec2d
 from pygame.color import THECOLORS
 from model.coord import PhysCoord, GfxCoord
 from model.space import Space
-from model.body import Ball, Body, LineSegment, Line
+from model.body import Ball, Body
 from controller.line_controller import LineController
 import consts
 from pygame.locals import *
-import random
 from queue import Queue, Empty, Full
-from copy import deepcopy
 from view.screen import PygameDisplay
 
 class Game(object):
