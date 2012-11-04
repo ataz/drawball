@@ -7,6 +7,11 @@ from consts import SCREEN_HEIGHT
 class LineController(object):
 
     def __init__(self, space, world):
+        # todo world CAN NOT be used in this way. Do it properly
+        # i.e. find a GOOD way to solve the whole space/world_objects problem...
+        # best way is probably just to add world_objects to the custom Space,
+        # and let all that shit be handled there instead of having to remember
+        # to store everything in 2 different places.
         self.lines = []
         self.space = space
         self.world = world
