@@ -46,19 +46,19 @@ class Line(Entity):
         return new_segment
 
     def _make_line(self, segments):
-        def add_segment(segment):
-            if self._line and segment.a == self._line[-1]:
-                self._line.append(segment.b)
-            else:
-                self._line.extend((segment.a, segment.b))
-
-            self.last_point = segment.b
-
         if isinstance(segments, list):
             for segment in segments:
-                add_segment(segment)
+                self._add_segment(segment)
         else:
-            add_segment(segments)
+            self._add_segment(segments)
+
+    def _add_segment(self, segment):
+        if self._line and segment.a == self._line[-1]:
+            self._line.append(segment.b)
+        else:
+            self._line.extend((segment.a, segment.b))
+
+        self.last_point = segment.b
 
     def add_segments(self, segments):
         """
@@ -80,8 +80,8 @@ class Line(Entity):
 
 
 class Body(Entity):
-    def __init__(self, position=None, mass=None, moment=None):
-        self.body = pymunk.Body(mass, moment)
+    def __init__(self, position=None, mass=None, moment=None, body_type=pymunk.Body.DYNAMIC):
+        self.body = pymunk.Body(mass, moment, body_type=body_type)
         if position:
             try:
                 assert isinstance(position, PhysCoord)
@@ -125,7 +125,7 @@ class LineSegment(Body):
         self.a = start_point
         self.b = end_point
         self.radius = radius
-        super().__init__()
+        super().__init__(body_type=pymunk.Body.STATIC)
 #        super().__init__(PhysCoord(get_midpoint(start_point, end_point)))
 #        super().__init__(self.a)
         self.shape = pymunk.Segment(self.body, start_point, end_point, self.radius)

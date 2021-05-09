@@ -19,13 +19,12 @@ class Game(object):
         PAUSED = 2
         STOPPED = 3
 
-    def __init__(self, gravity=PhysCoord(0.0, -982.0),title="Drawball 0.1"):
+    def __init__(self, gravity=PhysCoord(0, -982.0),title="Drawball 0.1"):
         pygame.init()
         self.title = title
-        self.FPS = 120
+        self.FPS = 144
         self.width = consts.SCREEN_WIDTH
         self.height = consts.SCREEN_HEIGHT
-        self.segments = []
         self.clock = pygame.time.Clock()
         self.display = PygameDisplay()
         self.screen = self.display.set_mode(self.width, self.height)
@@ -58,9 +57,8 @@ class Game(object):
             y = self.height*0.8
             position = PhysCoord(x, y)
 
-        ball = Ball(position, mass, radius=14)
-        self.space.add(ball.body, ball.shape)
-        self.space.world_objects.append(ball) # todo handle in controller
+        ball = Ball(position, mass, radius=radius)
+        self.space.add(ball.body, ball.shape, world_objects=[ball])
 
         return ball
 
@@ -89,8 +87,7 @@ class Game(object):
                 event()
 
     def destroy(self, obj):
-        self.space.remove(obj.shape, obj.body)
-        self.space.world_objects.remove(obj)
+        self.space.remove(obj.shape, obj.body, world_objects=[obj])
 
     def _cycle(self):
         self.exec_event_queue()
@@ -104,9 +101,13 @@ class Game(object):
                 elif event.key == pygame.K_a:
                     self.add_event(self.add_ball)
                 elif event.key == pygame.K_c:
-                    # TODO implement
-                    pass
+                    for obj in self.space.world_objects:
+                        if obj.body in self.space.bodies:
+                            self.space.remove(obj.body)
+                        if obj.shape in self.space.shapes:
+                            self.space.remove(obj.shape)
 
+                    self.space.world_objects = []
 
             elif event.type == pygame.MOUSEBUTTONDOWN and not self.is_drawing:
                 self.is_drawing = True

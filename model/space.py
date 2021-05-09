@@ -14,16 +14,29 @@ class Space(object):
         self.gravity = gravity
         self.world_objects = []
 
-    def remove(self, *objs):
-        self._space.remove(*objs)
-#        if isinstance(objs, tuple):
-#            [self.world_objects.remove(x) for x in objs]
-#        else:
-#            self.world_objects.remove(objs)
-    #todo consider creating physic world controller where the world objects can be controlled.
+    @property
+    def bodies(self):
+        return self._space.bodies
 
-    def add(self, *objs):
+    @property
+    def shapes(self):
+        return self._space.shapes
+
+    def remove(self, *objs, **world_objects):
+        self._space.remove(*objs)
+        user_objects = world_objects.get("world_objects")
+        if user_objects:
+            [self.world_objects.remove(obj) for obj in user_objects]
+
+    #todo consider creating physic world controller where the world objects can be controlled.
+    def add(self, *objs, **world_objects):
         self._space.add(*objs)
+        user_objects = world_objects.get("world_objects")
+        if user_objects:
+            self.world_objects.extend(user_objects)
+
+#    def add(self, *objs):
+#        self._space.add(*objs)
 #        self.world_objects.extend(objs)
 
     def count_bodies(self):
